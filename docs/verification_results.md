@@ -1,17 +1,28 @@
-# Verification results
+# Verification Results
 
-Validation date: 2026-09-20
+Revalidated: 2026-09-21
 
 ## Executed checks
 
 | Check | Result | Evidence |
 |---|---|---|
-| RTL lint | PASS | `make lint` completed with Verilator |
-| Executable RTL smoke test | PASS | `I2C_SMOKE_PASS checks=3` |
-| UVM source compile/elaboration lint | PASS | `sim/files.f`, assertions, slave model, and UVM package compiled against Accellera UVM core commit `78c0654` |
+| RTL lint | PASS | `make lint`; zero RTL warnings |
+| Executable serial + SVA smoke | PASS | `I2C_SMOKE_PASS checks=3` |
+| Parameter elaboration | PASS | Non-power-of-two `CLK_DIV=3` variant passed strict lint |
+| UVM source compile/elaboration | PASS | Master, bus interface, target model, SVA, package, and top compiled with Accellera UVM `78c0654` |
 
-The smoke test decodes the actual open-drain serial bus and checks one ACKed transfer, one address NACK, and one data NACK, including START/STOP and payload recovery.
+```text
+I2C_SMOKE_PASS checks=3
+```
 
-## Xcelium status
+The target model decodes the real SDA/SCL transaction rather than reading internal DUT state. The three checks cover ACK success, address NACK, and data NACK while validating START/STOP, transmitted address/data, and accumulated `ack_error`. Runtime SVA also proves that asserted drive-low controls produce observed low bus levels.
 
-Cadence Xcelium was not installed in the validation environment, so no Xcelium runtime result is claimed. On a licensed Xcelium host, run `make uvm` for one seeded test or `make regress` for the five-seed regression. A passing run must finish with zero `UVM_ERROR` and zero `UVM_FATAL` messages.
+## Second-pass findings corrected
+
+- Reserved-address bins that constraints could never hit were replaced with legal range bins and explicit illegal bins.
+- Open-drain SCL/SDA assertions were added.
+- Scoreboard no-traffic and shell `pipefail` guards were added.
+
+## Xcelium boundary
+
+No Xcelium runtime or functional-coverage percentage is claimed because the tool is not installed here. Complete UVM source elaboration passed. A licensed `make regress` run must finish with zero UVM errors/fatals, passing SVA, and the planned ACK/NACK coverage.

@@ -130,6 +130,9 @@ package i2c_uvm_pkg;
       if (tr.ack_error !== (tr.nack_phase != 0))
         `uvm_error("ACK", "ack_error did not match injected NACK")
     endfunction
+    function void check_phase(uvm_phase phase);
+      if (checked == 0) `uvm_error("NO_TRAFFIC", "No I2C transactions reached the scoreboard")
+    endfunction
     function void report_phase(uvm_phase phase);
       `uvm_info("I2C_SUMMARY", $sformatf("Checked %0d writes", checked), UVM_LOW)
     endfunction
@@ -139,9 +142,10 @@ package i2c_uvm_pkg;
     i2c_item tr;
     covergroup cg;
       cp_addr: coverpoint tr.addr {
-        bins reserved_low = {[0 : 7]};
-        bins normal = {[8 : 119]};
-        bins reserved_high = {[120 : 127]};
+        bins legal_low = {[8 : 31]};
+        bins legal_mid = {[32 : 95]};
+        bins legal_high = {[96 : 119]};
+        illegal_bins reserved = {[0 : 7], [120 : 127]};
       }
       cp_data: coverpoint tr.data {
         bins zero = {0}; bins ones = {'1}; bins alt[] = {8'h55, 8'haa}; bins other = default;

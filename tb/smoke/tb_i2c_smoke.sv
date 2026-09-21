@@ -38,6 +38,18 @@ module tb_i2c_smoke;
       .captured_data,
       .capture_valid
   );
+  i2c_sva sva (
+      .clk,
+      .rst_n,
+      .start,
+      .busy,
+      .done,
+      .ack_error,
+      .scl,
+      .sda,
+      .scl_drive_low,
+      .sda_drive_low
+  );
   task automatic send(input logic [6:0] addr, input logic [7:0] data, input logic [1:0] nack);
     while (busy) @(posedge clk);
     @(negedge clk);

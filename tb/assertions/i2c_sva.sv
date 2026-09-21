@@ -19,6 +19,10 @@ module i2c_sva (
   assert property (done |=> !done);
   ap_lines_known :
   assert property (!$isunknown({scl, sda, scl_drive_low, sda_drive_low}));
+  ap_scl_open_drain :
+  assert property (scl_drive_low |-> !scl);
+  ap_sda_open_drain :
+  assert property (sda_drive_low |-> !sda);
   cp_ack_error :
   cover property (done && ack_error);
   cp_success :

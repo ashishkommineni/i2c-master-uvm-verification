@@ -19,7 +19,7 @@ make lint
 make smoke
 ```
 
-The smoke test decodes three real bus transactions: ACK success, address NACK, and data NACK. Passing output is `I2C_SMOKE_PASS checks=3`. The Xcelium UVM regression randomizes addresses, payloads, and negative ACK behavior.
+The smoke test decodes three real bus transactions—ACK success, address NACK, and data NACK—while running the open-drain SVA. Passing output is `I2C_SMOKE_PASS checks=3`. The Xcelium UVM regression randomizes addresses, payloads, and negative ACK behavior.
 
 See [verified results and tool scope](docs/verification_results.md) for the reproducible validation record.
 
